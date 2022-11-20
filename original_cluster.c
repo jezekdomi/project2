@@ -1,6 +1,3 @@
-// $ gcc -std=c99 -Wall -Wextra -Werror -DNDEBUG cluster.c -o cluster -lm
-// ./cluster SOUBOR [N]
-
 /**
  * Kostra programu pro 2. projekt IZP 2022/23
  *
@@ -12,8 +9,6 @@
 #include <assert.h>
 #include <math.h> // sqrtf
 #include <limits.h> // INT_MAX
-#include <string.h>
-#include <stdbool.h>
 
 /*****************************************************************
  * Ladici makra. Vypnout jejich efekt lze definici makra
@@ -88,11 +83,7 @@ void init_cluster(struct cluster_t *c, int cap)
     assert(cap >= 0);
 
     // TODO
-    c->obj = malloc(sizeof(struct obj_t) * cap);
-    if (c->obj == NULL)
-    {
-        fprintf(stderr, "kapacita 0\n");
-    }
+
 }
 
 /*
@@ -100,8 +91,7 @@ void init_cluster(struct cluster_t *c, int cap)
  */
 void clear_cluster(struct cluster_t *c)
 {
-    free(c->obj);
-    free(c);
+    // TODO
 }
 
 /// Chunk of cluster objects. Value recommended for reallocation.
@@ -138,12 +128,6 @@ struct cluster_t *resize_cluster(struct cluster_t *c, int new_cap)
 void append_cluster(struct cluster_t *c, struct obj_t obj)
 {
     // TODO
-    if (c->size == c->capacity)
-    {
-        c = resize_cluster(c, c->capacity + CLUSTER_CHUNK);
-    }
-
-    c->obj[c->size++] = obj;
 }
 
 /*
@@ -251,16 +235,6 @@ void print_cluster(struct cluster_t *c)
     putchar('\n');
 }
 
-bool cmpr_strngs(char *key, char *text)
-{
-    int i;
-    for (i = 0; i < 5; i++)
-    {
-        if (key[i] != text[i]) break;
-    }
-    return key[i] == text[i];
-}
-
 /*
  Ze souboru 'filename' nacte objekty. Pro kazdy objekt vytvori shluk a ulozi
  jej do pole shluku. Alokuje prostor pro pole vsech shluku a ukazatel na prvni
@@ -272,24 +246,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
 {
     assert(arr != NULL);
 
-    // TO DO
-    strcat(filename, ".txt");
-    FILE *f = fopen(filename, "r");
-
-    char key[6] = "count=";
-    char text[6];
-    fscanf(f, "%6s", text);
-    printf("%d\n", cmpr_strngs(key, text));
-
-    int cap;
-    fscanf(f, "%d", &cap);
-    printf("%d\n", cap);
-
-    for (int i = 0; i < cap; i++)
-    {
-        fscanf(f, "%d %lf %lf", arr[i]->obj->id, arr[i]->obj->x, arr[i]->obj->y);
-    }
-    
+    // TODO
 }
 
 /*
@@ -310,5 +267,5 @@ int main(int argc, char *argv[])
 {
     struct cluster_t *clusters;
 
-    load_clusters(argv[1], &clusters);
+    // TODO
 }
