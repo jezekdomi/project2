@@ -84,7 +84,7 @@ int main(int argc, char const *argv[])
     {
         init_cluster(&clusters[i]/* &(*arr)[i] */, 1);
 
-        fscanf(f, "%d %f %f", &clusters[i].obj->id, &(clusters[i]).obj->x, /*&(*arr)[i]*/&(clusters[i]).obj->y);
+        fscanf(f, "%d %f %f", &clusters[i].obj->id, &clusters[i].obj->x, /*&(*arr)[i]*/&clusters[i].obj->y);
 
         printf("cluster i (%d) id: %d\n", i, clusters[i].obj->id);
 
