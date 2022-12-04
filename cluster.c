@@ -1,19 +1,15 @@
-// $ gcc -std=c99 -Wall -Wextra -Werror -DNDEBUG cluster.c -o cluster -lm
-// ./cluster SOUBOR [N]
-
 /**
  * Kostra programu pro 2. projekt IZP 2022/23
  *
  * Jednoducha shlukova analyza: 2D nejblizsi soused.
  * Single linkage
- */
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h> // sqrtf
 #include <limits.h> // INT_MAX
 #include <string.h>
-#include <stdbool.h>
 
 /*****************************************************************
  * Ladici makra. Vypnout jejich efekt lze definici makra
@@ -21,7 +17,7 @@
  *   a) pri prekladu argumentem prekladaci -DNDEBUG
  *   b) v souboru (na radek pred #include <assert.h>
  *      #define NDEBUG
- */
+*/
 #ifdef NDEBUG
 #define debug(s)
 #define dfmt(s, ...)
@@ -44,6 +40,11 @@
 
 #endif
 
+#define TRUE 1
+#define FALSE 0
+
+#define ERR_ALLOC "allocation error!"
+
 /*****************************************************************
  * Deklarace potrebnych datovych typu:
  *
@@ -55,7 +56,7 @@
  *      kapacita shluku (pocet objektu, pro ktere je rezervovano
  *          misto v poli),
  *      ukazatel na pole shluku.
- */
+*/
 
 struct obj_t {
     int id;
@@ -76,7 +77,7 @@ struct cluster_t {
  *
  * IMPLEMENTUJTE POUZE FUNKCE NA MISTECH OZNACENYCH 'TODO'
  *
- */
+*/
 
 /*
  Inicializace shluku 'c'. Alokuje pamet pro cap objektu (kapacitu).
@@ -88,20 +89,26 @@ void init_cluster(struct cluster_t *c, int cap)
     assert(cap >= 0);
 
     // TODO
-    c->obj = malloc(sizeof(struct obj_t) * cap);
+    c->obj = malloc(cap * (sizeof(int) + 2 * sizeof(float)));
     if (c->obj == NULL)
     {
-        fprintf(stderr, "kapacita 0\n");
+        c->capacity = 0;
     }
+    else
+    {
+        c->capacity = cap;
+    }
+    c->size = 0;
 }
 
 /*
  Odstraneni vsech objektu shluku a inicializace na prazdny shluk.
- */
+*/
 void clear_cluster(struct cluster_t *c)
 {
     free(c->obj);
-    free(c);
+    c->size = 0;
+    c->capacity = 0;
 }
 
 /// Chunk of cluster objects. Value recommended for reallocation.
@@ -109,7 +116,7 @@ const int CLUSTER_CHUNK = 10;
 
 /*
  Zmena kapacity shluku 'c' na kapacitu 'new_cap'.
- */
+*/
 struct cluster_t *resize_cluster(struct cluster_t *c, int new_cap)
 {
     // TUTO FUNKCI NEMENTE
@@ -134,28 +141,22 @@ struct cluster_t *resize_cluster(struct cluster_t *c, int new_cap)
 /*
  Prida objekt 'obj' na konec shluku 'c'. Rozsiri shluk, pokud se do nej objekt
  nevejde.
- */
+*/
 void append_cluster(struct cluster_t *c, struct obj_t obj)
 {
     // TODO
-    if (c->size == c->capacity)
-    {
-        c = resize_cluster(c, c->capacity + CLUSTER_CHUNK);
-    }
-
-    c->obj[c->size++] = obj;
 }
 
 /*
  Seradi objekty ve shluku 'c' vzestupne podle jejich identifikacniho cisla.
- */
+*/
 void sort_cluster(struct cluster_t *c);
 
 /*
  Do shluku 'c1' prida objekty 'c2'. Shluk 'c1' bude v pripade nutnosti rozsiren.
  Objekty ve shluku 'c1' budou serazeny vzestupne podle identifikacniho cisla.
  Shluk 'c2' bude nezmenen.
- */
+*/
 void merge_clusters(struct cluster_t *c1, struct cluster_t *c2)
 {
     assert(c1 != NULL);
@@ -182,7 +183,7 @@ int remove_cluster(struct cluster_t *carr, int narr, int idx)
 
 /*
  Pocita Euklidovskou vzdalenost mezi dvema objekty.
- */
+*/
 float obj_distance(struct obj_t *o1, struct obj_t *o2)
 {
     assert(o1 != NULL);
@@ -251,16 +252,6 @@ void print_cluster(struct cluster_t *c)
     putchar('\n');
 }
 
-bool cmpr_strngs(char *key, char *text)
-{
-    int i;
-    for (i = 0; i < 5; i++)
-    {
-        if (key[i] != text[i]) break;
-    }
-    return key[i] == text[i];
-}
-
 /*
  Ze souboru 'filename' nacte objekty. Pro kazdy objekt vytvori shluk a ulozi
  jej do pole shluku. Alokuje prostor pro pole vsech shluku a ukazatel na prvni
@@ -272,22 +263,18 @@ int load_clusters(char *filename, struct cluster_t **arr)
 {
     assert(arr != NULL);
 
-    // TO DO
-    strcat(filename, ".txt");
-    FILE *f = fopen(filename, "r");
+    // TODO
+    FILE *f = fopen(strcat(filename, ".txt"), "r");
+    int num_of_obj;
+    fscanf(f, "count=%d", &num_of_obj);
 
-    char key[6] = "count=";
-    char text[6];
-    fscanf(f, "%6s", text);
-    printf("%d\n", cmpr_strngs(key, text));
-
-    int cap;
-    fscanf(f, "%d", &cap);
-    printf("%d\n", cap);
-
-    for (int i = 0; i < cap; i++)
+    *arr = malloc(num_of_obj * sizeof(struct cluster_t));
+    
+    for (int i = 0; i < num_of_obj; i++)
     {
-        fscanf(f, "%d %lf %lf", arr[i]->obj->id, arr[i]->obj->x, arr[i]->obj->y);
+        init_cluster(&(*arr)[i], 1);
+
+        fscanf(f, "%d %f %f", &(*arr)[i].obj->id, &(*arr)[i].obj->x, &(*arr)[i].obj->y);
     }
     
 }
@@ -310,5 +297,8 @@ int main(int argc, char *argv[])
 {
     struct cluster_t *clusters;
 
+    // TODO
     load_clusters(argv[1], &clusters);
+
+    print_clusters(clusters, 2);
 }
