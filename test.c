@@ -84,14 +84,14 @@ int main(int argc, char const *argv[])
     {
         init_cluster(&clusters[i]/* &(*arr)[i] */, 1);
 
-        fscanf(f, "%d %f %f", &(clusters[i]).obj->id, &(clusters[i]).obj->x, /*&(*arr)[i]*/&(clusters[i]).obj->y);
+        fscanf(f, "%d %f %f", &clusters[i].obj->id, &(clusters[i]).obj->x, /*&(*arr)[i]*/&(clusters[i]).obj->y);
 
-        // printf("cluster i (%d) id: %d\n", i, clusters[i].obj->id);
+        printf("cluster i (%d) id: %d\n", i, clusters[i].obj->id);
 
-        print_cluster(&(clusters[i]));
+        // print_cluster(&(clusters[i]));
     }
 
-    print_clusters(&(*clusters), num_of_obj);
+    // print_clusters(clusters, num_of_obj);
 
     // clusters = malloc(2 * sizeof(struct cluster_t)); // zakomentovat pro ver1
 
