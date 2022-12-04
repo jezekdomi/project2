@@ -89,7 +89,7 @@ void init_cluster(struct cluster_t *c, int cap)
     assert(cap >= 0);
 
     // TODO
-    c->obj = malloc(cap * (sizeof(int) + 2 * sizeof(float)));
+    c->obj = malloc(cap * sizeof(struct obj_t));
     if (c->obj == NULL)
     {
         c->capacity = 0;
@@ -108,7 +108,6 @@ void clear_cluster(struct cluster_t *c)
 {
     free(c->obj);
     c->size = 0;
-    c->capacity = 0;
 }
 
 /// Chunk of cluster objects. Value recommended for reallocation.
@@ -266,7 +265,7 @@ int load_clusters(char *filename, struct cluster_t **arr)
     // TODO
     FILE *f = fopen(strcat(filename, ".txt"), "r");
     int num_of_obj;
-    fscanf(f, "count=%d", &num_of_obj);
+    int valid_input = fscanf(f, "count=%d", &num_of_obj);
 
     *arr = malloc(num_of_obj * sizeof(struct cluster_t));
     
