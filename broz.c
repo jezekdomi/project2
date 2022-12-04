@@ -388,6 +388,7 @@ int main(int argc, char *argv[])
             narr = remove_cluster(clusters, narr, c2);
         }
         print_clusters(clusters, narr);
+        narr = remove_cluster(clusters, narr, c2);
         clear_cluster(clusters);
         return 0;
 
